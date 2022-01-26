@@ -30,8 +30,8 @@ export class JournalLineEntity extends BaseEntity {
     @ManyToOne(type => WalletEntity)
     wallet: WalletEntity;
 
-    @ManyToOne(type => JournalEntity)
-    journal: JournalEntity;
+    // @ManyToOne(type => JournalEntity)
+    // journal: JournalEntity;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

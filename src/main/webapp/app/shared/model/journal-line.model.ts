@@ -9,7 +9,6 @@ export interface IJournalLine {
   type?: TransactionType | null;
   narration?: string | null;
   operation?: OperationType | null;
-  journal?: IJournal | null;
   wallet?: IWallet | null;
   journal?: IJournal | null;
 }

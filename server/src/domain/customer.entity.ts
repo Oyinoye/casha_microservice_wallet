@@ -21,7 +21,7 @@ export class CustomerEntity extends BaseEntity {
     @Column({ name: 'address', nullable: true })
     address: string;
 
-    @Column({ type: 'long', name: 'bvn', nullable: true })
+    @Column({ name: 'bvn', nullable: true })
     bvn: number;
 
     @Column({ type: 'date', name: 'date_of_birth', nullable: true })

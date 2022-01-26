@@ -50,7 +50,7 @@ export const JournalLineUpdate = (props: IJournalLineUpdateProps) => {
         ...journalLineEntity,
         ...values,
         journal: journals.find(it => it.id.toString() === values.journalId.toString()),
-        journal: journals.find(it => it.id.toString() === values.journalId.toString()),
+        // journal: journals.find(it => it.id.toString() === values.journalId.toString()),
         wallet: wallets.find(it => it.id.toString() === values.walletId.toString()),
       };
 

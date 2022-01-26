@@ -29,8 +29,8 @@ export class JournalLineDTO extends BaseDTO {
     @ApiModelProperty({ type: WalletDTO, description: 'wallet relationship' })
     wallet: WalletDTO;
 
-    @ApiModelProperty({ type: JournalDTO, description: 'journal relationship' })
-    journal: JournalDTO;
+    // @ApiModelProperty({ type: JournalDTO, description: 'journal relationship' })
+    // journal: JournalDTO;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }
