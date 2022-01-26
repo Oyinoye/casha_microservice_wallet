@@ -1,0 +1,57 @@
+{
+  "generator-jhipster": {
+    "authenticationType": "jwt",
+    "clientFramework": "react",
+    "serverPort": "8080",
+    "serviceDiscoveryType": "eureka",
+    "skipUserManagement": false,
+    "withAdminUi": true,
+    "baseName": "wallet",
+    "buildTool": "maven",
+    "databaseType": "sql",
+    "devDatabaseType": "sqlite",
+    "cacheProvider": "no",
+    "enableHibernateCache": false,
+    "enableSwaggerCodegen": true,
+    "enableTranslation": true,
+    "jhiPrefix": "jhi",
+    "languages": ["en", "fr"],
+    "messageBroker": "kafka",
+    "prodDatabaseType": "postgresql",
+    "searchEngine": false,
+    "skipClient": false,
+    "testFrameworks": ["protractor", "cucumber", "gatling"],
+    "websocket": false,
+    "packageName": "com.jhipster.node",
+    "packageFolder": "ng/com/max",
+    "applicationType": "gateway",
+    "dtoSuffix": "DTO",
+    "entitySuffix": "Entity",
+    "nativeLanguage": "en",
+    "jhipsterVersion": "7.0.1",
+    "skipServer": false,
+    "clientPackageManager": "npm",
+    "reactive": true,
+    "clientTheme": "none",
+    "clientThemeVariant": "",
+    "entities": ["Customer", "Wallet", "JournalLine", "Journal", "AppTransact", "Biller"],
+    "skipCheckLengthOfIdentifier": false,
+    "skipFakeData": false,
+    "blueprints": [
+      {
+        "name": "generator-jhipster-nodejs",
+        "version": "2.0.0"
+      }
+    ],
+    "otherModules": [
+      {
+        "name": "generator-jhipster-nodejs",
+        "version": "2.0.0"
+      }
+    ],
+    "pages": [],
+    "creationTimestamp": 1643188305580,
+    "jwtSecretKey": "ZjNkZjcyMjQyOWZjOWM4YjIyYWQ1Njk4NmY5MjA3NDlmNzVhMjEwZTY1NzUzYjJkYTNiOTRiYzMzZTdmMGM2NDFkODc2MTM2MDQ4OWU5NTNmNGM5MjUwY2M3OGI3NjMyOTI3NTg3YTMyYzlhODU4MTgyNGIzNzMwODE1MGZmOWY=",
+    "lastLiquibaseTimestamp": 1643188665000
+  }
+}

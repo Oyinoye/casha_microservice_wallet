@@ -1,0 +1,156 @@
+
+/**
+ * JHipster JDL model for myGateway
+ */
+
+application {
+  config {
+    packageName ng.com.max
+    baseName wallet
+    applicationType gateway
+    authenticationType jwt
+    clientFramework react
+    databaseType sql
+    serverPort 8080
+    devDatabaseType postgresql
+    dtoSuffix DTO
+    enableSwaggerCodegen true
+    entitySuffix Entity
+    languages [en, fr]
+    messageBroker kafka
+    nativeLanguage en
+    prodDatabaseType postgresql
+    serviceDiscoveryType eureka
+    testFrameworks [protractor, cucumber, gatling]
+
+  }
+  entities *
+}
+
+// ==============================
+// Entity definitions starts here
+// ==============================
+
+/** ENUMS  **/
+
+/** Wallet Type  **/
+enum WalletType {
+    BonusWallet
+    CustomerWallet
+    BillerWallet
+    SystemWallet
+}
+
+/** Wallet Status  **/
+enum WalletStatus {
+    Inactive
+    Active
+    Blocked
+    Suspended
+}
+
+/** Transaction Type  **/
+enum TransactionType {
+    WalletTransfer
+    BankTransfer
+    WalletFunding
+    BankFunding
+    BillPayment
+}
+
+/** Operation Type  **/
+enum OperationType {
+    Debit
+    Credit
+}
+
+
+/** ENTITIES **/
+
+
+/** Customer  **/
+entity Customer {
+    customerID String required
+    phoneNumber String required
+    nationality String
+    address String
+    bvn Long
+    dateOfBirth LocalDate
+}
+
+
+/** Wallet **/
+entity Wallet {
+    walletID String
+    nuban String
+    accountNumber String
+    balance Float
+    expiryDate LocalDate
+    type WalletType
+    status WalletStatus
+}
+
+/** JournalLine -record of transactions **/
+entity JournalLine {
+    amount Double
+    type TransactionType
+    narration String
+    operation OperationType
+}
+
+/** Journal for Book-keeping **/
+entity Journal {
+    journalID String
+    dateOfEntry LocalDate
+    description String
+}
+
+/** App Transaction  **/
+entity AppTransact {
+    type TransactionType
+    transactionDate LocalDate
+    transactionRef String
+    description String
+}
+
+/** App Transaction  **/
+entity Biller {
+    name String
+    description String
+}
+
+
+/** RELATIONSHIPS **/
+
+
+relationship ManyToOne {
+    AppTransact{Customer(customerID)} to Customer
+    Wallet{Customer(customerID)} to Customer
+    JournalLine{Journal(journalID)} to Journal
+    JournalLine{Wallet(walletID)} to Wallet
+}
+
+relationship OneToMany {
+    Journal to JournalLine{journal(journalID)}
+}
+
+
+relationship OneToOne {
+    Customer{user(login)} to User
+    Biller{wallet(accountNumber)} to Wallet
+}
+
+
+
+
+// =======
+// Options
+// =======
+// Set pagination options
+//paginate Transaction with pagination
+//paginate JournalLine with pagination
+//dto * with mapstruct
+// Set service options to all
+//service all with serviceImpl
+// Set an angular suffix
+// angularSuffix * with mySuffix

@@ -1,0 +1,28 @@
+{
+  "walletApp": {
+    "appTransact": {
+      "home": {
+        "title": "AppTransacts",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau App Transact",
+        "createOrEditLabel": "Créer ou éditer un App Transact",
+        "notFound": "Aucun App Transact trouvé"
+      },
+      "created": "Un nouveau App Transact a été créé avec l'identifiant {{ param }}",
+      "updated": "Le App Transact avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le App Transact avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le App Transact {{ id }} ?"
+      },
+      "detail": {
+        "title": "App Transact"
+      },
+      "id": "ID",
+      "type": "Type",
+      "transactionDate": "Transaction Date",
+      "transactionRef": "Transaction Ref",
+      "description": "Description",
+      "customer": "Customer"
+    }
+  }
+}

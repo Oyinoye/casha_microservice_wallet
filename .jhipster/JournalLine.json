@@ -1,0 +1,58 @@
+{
+  "name": "JournalLine",
+  "fields": [
+    {
+      "fieldName": "amount",
+      "fieldType": "Double"
+    },
+    {
+      "fieldName": "type",
+      "fieldType": "TransactionType",
+      "fieldValues": "WalletTransfer,BankTransfer,WalletFunding,BankFunding,BillPayment"
+    },
+    {
+      "fieldName": "narration",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "operation",
+      "fieldType": "OperationType",
+      "fieldValues": "Debit,Credit"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "journal",
+      "otherEntityRelationshipName": "journalLine",
+      "relationshipName": "journal",
+      "otherEntityField": "journalID"
+    },
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "wallet",
+      "otherEntityRelationshipName": "journalLine",
+      "relationshipName": "wallet",
+      "otherEntityField": "walletID"
+    },
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "journal",
+      "otherEntityRelationshipName": "journalLine",
+      "relationshipName": "journal",
+      "otherEntityField": "journalID"
+    }
+  ],
+  "javadoc": "JournalLine -record of transactions",
+  "entityTableName": "journal_line",
+  "dto": "no",
+  "pagination": "no",
+  "service": "no",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "applications": ["wallet"],
+  "databaseType": "sql",
+  "changelogDate": "20220126091445"
+}

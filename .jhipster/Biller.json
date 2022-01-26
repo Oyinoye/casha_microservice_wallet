@@ -1,0 +1,35 @@
+{
+  "name": "Biller",
+  "fields": [
+    {
+      "fieldName": "name",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "description",
+      "fieldType": "String"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "one-to-one",
+      "otherEntityName": "wallet",
+      "otherEntityRelationshipName": "biller",
+      "relationshipName": "wallet",
+      "otherEntityField": "accountNumber",
+      "ownerSide": true
+    }
+  ],
+  "javadoc": "App Transaction",
+  "entityTableName": "biller",
+  "dto": "no",
+  "pagination": "no",
+  "service": "no",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "applications": ["wallet"],
+  "databaseType": "sql",
+  "changelogDate": "20220126091745"
+}

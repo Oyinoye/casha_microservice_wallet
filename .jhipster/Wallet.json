@@ -1,0 +1,56 @@
+{
+  "name": "Wallet",
+  "fields": [
+    {
+      "fieldName": "walletID",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "nuban",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "accountNumber",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "balance",
+      "fieldType": "Float"
+    },
+    {
+      "fieldName": "expiryDate",
+      "fieldType": "LocalDate"
+    },
+    {
+      "fieldName": "type",
+      "fieldType": "WalletType",
+      "fieldValues": "BonusWallet,CustomerWallet,BillerWallet,SystemWallet"
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "WalletStatus",
+      "fieldValues": "Inactive,Active,Blocked,Suspended"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "customer",
+      "otherEntityRelationshipName": "wallet",
+      "relationshipName": "customer",
+      "otherEntityField": "customerID"
+    }
+  ],
+  "javadoc": "Wallet",
+  "entityTableName": "wallet",
+  "dto": "no",
+  "pagination": "no",
+  "service": "no",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "applications": ["wallet"],
+  "databaseType": "sql",
+  "changelogDate": "20220126091345"
+}

@@ -1,0 +1,26 @@
+{
+  "walletApp": {
+    "biller": {
+      "home": {
+        "title": "Billers",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Biller",
+        "createOrEditLabel": "Créer ou éditer un Biller",
+        "notFound": "Aucun Biller trouvé"
+      },
+      "created": "Un nouveau Biller a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Biller avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Biller avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Biller {{ id }} ?"
+      },
+      "detail": {
+        "title": "Biller"
+      },
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "wallet": "Wallet"
+    }
+  }
+}

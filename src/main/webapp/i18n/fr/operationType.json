@@ -1,0 +1,9 @@
+{
+  "walletApp": {
+    "OperationType": {
+      "null": "",
+      "Debit": "Debit",
+      "Credit": "Credit"
+    }
+  }
+}

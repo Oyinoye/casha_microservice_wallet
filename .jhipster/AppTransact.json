@@ -1,0 +1,43 @@
+{
+  "name": "AppTransact",
+  "fields": [
+    {
+      "fieldName": "type",
+      "fieldType": "TransactionType",
+      "fieldValues": "WalletTransfer,BankTransfer,WalletFunding,BankFunding,BillPayment"
+    },
+    {
+      "fieldName": "transactionDate",
+      "fieldType": "LocalDate"
+    },
+    {
+      "fieldName": "transactionRef",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "description",
+      "fieldType": "String"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "customer",
+      "otherEntityRelationshipName": "appTransact",
+      "relationshipName": "customer",
+      "otherEntityField": "customerID"
+    }
+  ],
+  "javadoc": "App Transaction",
+  "entityTableName": "app_transact",
+  "dto": "no",
+  "pagination": "no",
+  "service": "no",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "applications": ["wallet"],
+  "databaseType": "sql",
+  "changelogDate": "20220126091645"
+}

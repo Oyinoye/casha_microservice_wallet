@@ -1,0 +1,37 @@
+{
+  "name": "Journal",
+  "fields": [
+    {
+      "fieldName": "journalID",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "dateOfEntry",
+      "fieldType": "LocalDate"
+    },
+    {
+      "fieldName": "description",
+      "fieldType": "String"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "one-to-many",
+      "otherEntityName": "journalLine",
+      "otherEntityRelationshipName": "journal",
+      "relationshipName": "journalLine"
+    }
+  ],
+  "javadoc": "Journal for Book-keeping",
+  "entityTableName": "journal",
+  "dto": "no",
+  "pagination": "no",
+  "service": "no",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "applications": ["wallet"],
+  "databaseType": "sql",
+  "changelogDate": "20220126091545"
+}

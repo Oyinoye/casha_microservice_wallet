@@ -1,0 +1,11 @@
+{
+  "walletApp": {
+    "WalletStatus": {
+      "null": "",
+      "Inactive": "Inactive",
+      "Active": "Active",
+      "Blocked": "Blocked",
+      "Suspended": "Suspended"
+    }
+  }
+}

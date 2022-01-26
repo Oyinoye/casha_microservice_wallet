@@ -1,0 +1,30 @@
+{
+  "walletApp": {
+    "journalLine": {
+      "home": {
+        "title": "JournalLines",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Journal Line",
+        "createOrEditLabel": "Créer ou éditer un Journal Line",
+        "notFound": "Aucun Journal Line trouvé"
+      },
+      "created": "Un nouveau Journal Line a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Journal Line avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Journal Line avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Journal Line {{ id }} ?"
+      },
+      "detail": {
+        "title": "Journal Line"
+      },
+      "id": "ID",
+      "amount": "Amount",
+      "type": "Type",
+      "narration": "Narration",
+      "operation": "Operation",
+      "journal": "Journal",
+      "wallet": "Wallet",
+      "journal": "Journal"
+    }
+  }
+}

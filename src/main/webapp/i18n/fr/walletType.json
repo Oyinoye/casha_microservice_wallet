@@ -1,0 +1,11 @@
+{
+  "walletApp": {
+    "WalletType": {
+      "null": "",
+      "BonusWallet": "BonusWallet",
+      "CustomerWallet": "CustomerWallet",
+      "BillerWallet": "BillerWallet",
+      "SystemWallet": "SystemWallet"
+    }
+  }
+}
