@@ -47,7 +47,7 @@ export class UserController {
             take: +pageRequest.size,
             order: pageRequest.sort.asOrder(),
         });
-        HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+        // HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
         return results;
     }
 
