@@ -7,7 +7,7 @@ const logger = new Logger('Config');
 
 export class Config {
     debugLogging = 'debug';
-    'server.port' = '8081';
+    'server.port' = '8080';
     'jhipster.clientApp.name' = 'wallet';
     'jhipster.registry.password' = 'admin';
     'jhipster.security.authentication.jwt.base64-secret' = '';
