@@ -60,6 +60,14 @@ export class AuthService {
         return userDTO;
     }
 
+    async getAccountByEmail(email: string): Promise<any> {
+        const userFind: UserDTO = await this.userService.findByFields({ where: { email } });
+        if (!userFind) {
+            throw new HttpException('Email not found', HttpStatus.BAD_REQUEST);
+        }
+        return userFind;
+    }
+
     async changePassword(userLogin: string, currentClearTextPassword: string, newPassword: string): Promise<void> {
         const userFind: UserDTO = await this.userService.findByFields({ where: { login: userLogin } });
         if (!userFind) {
