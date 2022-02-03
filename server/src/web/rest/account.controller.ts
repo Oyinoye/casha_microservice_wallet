@@ -23,7 +23,7 @@ import { LoggingInterceptor } from '../../client/interceptors/logging.intercepto
 import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { AuthService } from '../../service/auth.service';
 import { Client, ClientKafka } from '@nestjs/microservices';
-import { TransportConfig } from '../../transportConfig';
+// import { TransportConfig } from '../../transportConfig';
 import { PasswordResetDTO } from '../../service/dto/password-reset.dto';
 import { SendEmailDTO } from '../../service/dto/send-email.dto';
 import { InitiateVerifyPhoneNumberDTO } from '../../service/dto/initiate-verify-phone-number.dto';
@@ -40,8 +40,8 @@ export class AccountController {
     constructor(private readonly authService: AuthService) {}
 
     // initialiase a kafka client to handle pub/sub for transports
-    @Client(TransportConfig)
-    client: ClientKafka;
+    // @Client(TransportConfig)
+    // client: ClientKafka;
 
 
 
@@ -62,7 +62,7 @@ export class AccountController {
             phoneNumber: payload.phoneNumber,
         };
         // use the kafka client to emmit a message to the broker with topic "send-sms" with the smsPaylaod
-        this.client.emit<any>('send-sms', smsPaylaod);
+        // this.client.emit<any>('send-sms', smsPaylaod);
         // return the otp key to the client
         return { otpKey };
     }
@@ -185,7 +185,7 @@ export class AccountController {
             emailType: EmailSendOperation.RESET_PASSWORD,
         };
         // use the kafka client to emmit a message to the broker with topic "send-email" with the email emailPaylaod
-        this.client.emit<any>('send-email', emailPaylaod);
+        // this.client.emit<any>('send-email', emailPaylaod);
 
         return {message: 'Email sent!'};
 
