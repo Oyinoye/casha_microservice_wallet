@@ -13,6 +13,8 @@ export class UserEntity extends BaseEntity {
     lastName?: string;
     @Column()
     email: string;
+    @Column({ nullable: true })
+    phoneNumber?: string;
     @Column({ default: false })
     activated?: boolean;
     @Column({ default: 'en' })

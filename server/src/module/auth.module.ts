@@ -11,10 +11,11 @@ import { AuthorityRepository } from '../repository/authority.repository';
 
 import { PublicUserController } from '../web/rest/public.user.controller';
 import { AccountController } from '../web/rest/account.controller';
+import { OtpRepository } from '../repository/otp-repository';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([AuthorityRepository]),
+        TypeOrmModule.forFeature([AuthorityRepository, OtpRepository]),
         UserModule,
         PassportModule,
         JwtModule.register({

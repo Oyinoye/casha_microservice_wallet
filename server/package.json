@@ -58,6 +58,7 @@
     "eureka-js-client": "4.5.0",
     "js-yaml": "4.1.0",
     "kafkajs": "^1.15.0",
+    "otp-generator": "^4.0.0",
     "passport": "0.4.1",
     "passport-jwt": "4.0.0",
     "pg": "8.4.2",
