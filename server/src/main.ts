@@ -6,6 +6,7 @@ import { setupSwagger } from './swagger';
 import { config } from './config';
 import { Logger, ValidationPipe, BadRequestException } from '@nestjs/common';
 import * as fs from 'fs';
+import { TransportConfig } from './transportConfig';
 const logger: Logger = new Logger('Main');
 const port = process.env.NODE_SERVER_PORT || config.get('server.port');
 const useJHipsterRegistry = config.get('eureka.client.enabled');
@@ -29,6 +30,9 @@ async function bootstrap(): Promise<void> {
         logger.log('No client it has been found');
     }
     setupSwagger(app);
+
+    app.connectMicroservice(TransportConfig);
+    await app.startAllMicroservices();
 
     await app.listen(port);
     logger.log(`Application listening on port ${port}`);
