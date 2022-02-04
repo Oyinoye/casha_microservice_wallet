@@ -46,7 +46,7 @@ export async function decode(string) {
     // Initialize decipher Object to decrypt using AES-256 Algorithm
     var decipher = crypto.createDecipheriv('aes-256-cbc', key, ivstring);
     var decrypted = decipher.update(string, 'base64', 'utf8');
-    decrypted += decipher.final();
+    decrypted += decipher.final('utf8');
     return decrypted;
 }
 

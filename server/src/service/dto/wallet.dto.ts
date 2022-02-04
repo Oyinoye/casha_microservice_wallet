@@ -14,16 +14,16 @@ export class WalletDTO extends BaseDTO {
     walletID: string;
 
     @ApiModelProperty({ description: 'nuban field', required: false })
-    nuban: string;
+    nuban?: string;
 
     @ApiModelProperty({ description: 'accountNumber field', required: false })
-    accountNumber: string;
+    accountNumber?: string;
 
     @ApiModelProperty({ description: 'balance field', required: false })
-    balance: number;
+    balance?: number;
 
     @ApiModelProperty({ description: 'expiryDate field', required: false })
-    expiryDate: any;
+    expiryDate?: any;
 
     @ApiModelProperty({ enum: WalletType, description: 'type enum field', required: false })
     type: WalletType;

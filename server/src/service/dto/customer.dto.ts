@@ -18,16 +18,16 @@ export class CustomerDTO extends BaseDTO {
     phoneNumber: string;
 
     @ApiModelProperty({ description: 'nationality field', required: false })
-    nationality: string;
+    nationality?: string;
 
     @ApiModelProperty({ description: 'address field', required: false })
-    address: string;
+    address?: string;
 
     @ApiModelProperty({ description: 'bvn field', required: false })
-    bvn: number;
+    bvn?: number;
 
     @ApiModelProperty({ description: 'dateOfBirth field', required: false })
-    dateOfBirth: any;
+    dateOfBirth?: any;
 
     @ApiModelProperty({ type: UserDTO, description: 'user relationship' })
     user: UserDTO;

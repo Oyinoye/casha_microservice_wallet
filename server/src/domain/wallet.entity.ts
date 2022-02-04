@@ -15,16 +15,16 @@ export class WalletEntity extends BaseEntity {
     walletID: string;
 
     @Column({ name: 'nuban', nullable: true })
-    nuban: string;
+    nuban?: string;
 
     @Column({ name: 'account_number', nullable: true })
-    accountNumber: string;
+    accountNumber?: string;
 
     @Column({ type: 'float', name: 'balance', nullable: true })
-    balance: number;
+    balance?: number;
 
     @Column({ type: 'date', name: 'expiry_date', nullable: true })
-    expiryDate: any;
+    expiryDate?: any;
 
     @Column({ type: 'simple-enum', name: 'type', enum: WalletType })
     type: WalletType;

@@ -14,6 +14,16 @@ import { OtpStatus, OtpTypes, OtpUsage } from '../utils/enums';
 import { OtpRepository } from '../repository/otp-repository';
 import { InitiateVerifyPhoneNumberDTO } from './dto/initiate-verify-phone-number.dto';
 import { VerifyPhoneNumberDTO } from './dto/verify-phone-number.dto';
+import { UserMapper } from './mapper/user.mapper';
+import { UserEntity } from '../domain/user.entity';
+import { WalletDTO } from './dto/wallet.dto';
+import { WalletEntity } from '../domain/wallet.entity';
+import { CustomerService } from './customer.service';
+import { CustomerDTO } from './dto/customer.dto';
+import { CustomerEntity } from '../domain/customer.entity';
+import { WalletType } from '../domain/enumeration/wallet-type';
+import { WalletStatus } from '../domain/enumeration/wallet-status';
+import { WalletService } from './wallet.service';
 
 @Injectable()
 export class AuthService {
@@ -23,6 +33,8 @@ export class AuthService {
         @InjectRepository(AuthorityRepository) private authorityRepository: AuthorityRepository,
         @InjectRepository(OtpRepository) private otpRepository: OtpRepository,
         private userService: UserService,
+        private customerService: CustomerService,
+        private walletService: WalletService
     ) { }
 
     async login(userLogin: UserLoginDTO): Promise<any> {
@@ -70,7 +82,7 @@ export class AuthService {
     async getAccountByEmail(email: string): Promise<any> {
         const userFind: UserDTO = await this.userService.findByFields({ where: { email } });
         if (!userFind) {
-            throw new HttpException('Email not found', HttpStatus.BAD_REQUEST);
+            throw new HttpException(`User with email "${email}" not found`, HttpStatus.BAD_REQUEST);
         }
         return userFind;
     }
@@ -128,8 +140,8 @@ export class AuthService {
     async getVerifyPhoneNumberOTP(payload:InitiateVerifyPhoneNumberDTO): Promise<any> {
 
         // check if phone number has already been used by another user
-        const userFind: UserDTO = await this.userService.findByFields({ where: { phoneNumber: payload.phoneNumber } });
-        if (userFind) {
+        const cutomerFind: CustomerDTO = await this.customerService.findByFields({ where: { phoneNumber: payload.phoneNumber } });
+        if (cutomerFind) {
             throw new HttpException(`This phone number ${payload.phoneNumber} has already been used by another user`, HttpStatus.BAD_REQUEST);
         }
 
@@ -177,13 +189,39 @@ export class AuthService {
         if(otpObj.status === OtpStatus.USED)
             throw new HttpException(`OTP has already been used`, HttpStatus.BAD_REQUEST);
 
-        // set otp status to used
-        otpObj.status = OtpStatus.USED;
-        await this.otpRepository.update(otp_key_info.otp_id, otpObj);
+        // create barebone user profile
+        const newUserData:UserDTO = new UserEntity;
+        newUserData.authorities = ['ROLE_USER'];
 
         // To-Do: Run check of phone number in other MAX databased to pull associated basic bio information
 
-        return { phoneNumber: otp_key_info.subject, verified: true }
+        // save newUserData to create a new user profile
+        const newUser = await this.userService.save(newUserData, otp_key_info.subject.replace("+", ""), true);
+        if(!newUser || !newUser.id)
+            return { phoneNumber: otp_key_info.subject }
+        
+        // set otp status to used after user is created
+        otpObj.status = OtpStatus.USED;
+        await this.otpRepository.update(otp_key_info.otp_id, otpObj);
+
+        // create customer record for user
+        const userCustomerData:CustomerDTO = new CustomerEntity;
+        userCustomerData.phoneNumber = otp_key_info.subject;
+        userCustomerData.user = newUser;
+        const userCustomer = await this.customerService.save(userCustomerData, otp_key_info.subject.replace("+", ""));
+        if(!userCustomer || !userCustomer.id)
+            return { ...newUser }
+
+        // create wallet for user
+        const userCustomerWalletData: WalletDTO = new WalletEntity;
+        userCustomerWalletData.customer = userCustomer;
+        userCustomerWalletData.type = WalletType.CustomerWallet;
+        userCustomerWalletData.status = WalletStatus.Inactive;
+        const userCustomerWallet = await this.walletService.save(userCustomerWalletData, otp_key_info.subject.replace("+", ""));
+        if(!userCustomerWallet || !userCustomerWallet.id)
+            return {...userCustomer}
+
+        return userCustomerWallet
         
     }
 }
