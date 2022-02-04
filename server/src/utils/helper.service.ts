@@ -57,7 +57,6 @@ export async function generateOtp(payload: any) {
     // add 10 seconds to the to start the validity time count
     let timestamp = new Date();
     timestamp.setSeconds(timestamp.getSeconds() + 10);
-    console.log(timestamp);
     // set OTP expiration to "validityDuration" set in the function param "payload"
     const expiration_time = timestamp.setSeconds(timestamp.getSeconds() + payload.validityDuration);
 

@@ -14,6 +14,7 @@ import { AccountController } from '../web/rest/account.controller';
 import { OtpRepository } from '../repository/otp-repository';
 import { CustomerModule } from './customer.module';
 import { WalletModule } from './wallet.module';
+import { KafkaModule } from './kafka.module';
 
 @Module({
     imports: [
@@ -24,7 +25,7 @@ import { WalletModule } from './wallet.module';
             secret: config['jhipster.security.authentication.jwt.base64-secret'],
             signOptions: { expiresIn: '300s' },
         }),
-        CustomerModule, WalletModule
+        CustomerModule, WalletModule, KafkaModule
     ],
     controllers: [UserJWTController, PublicUserController, AccountController],
     providers: [AuthService, JwtStrategy],
