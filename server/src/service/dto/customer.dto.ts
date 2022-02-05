@@ -26,6 +26,9 @@ export class CustomerDTO extends BaseDTO {
     @ApiModelProperty({ description: 'bvn field', required: false })
     bvn?: number;
 
+    @ApiModelProperty({ description: 'KYC level field', required: false })
+    kycLevel?: number;
+
     @ApiModelProperty({ description: 'dateOfBirth field', required: false })
     dateOfBirth?: any;
 

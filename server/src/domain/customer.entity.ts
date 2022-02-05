@@ -21,6 +21,9 @@ export class CustomerEntity extends BaseEntity {
     @Column({ name: 'address', nullable: true })
     address?: string;
 
+    @Column({ name: 'kyc_level', nullable: true })
+    kycLevel?: number
+
     @Column({ name: 'bvn', nullable: true })
     bvn?: number;
 

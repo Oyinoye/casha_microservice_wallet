@@ -223,37 +223,51 @@ export class AuthService {
         if(otpObj.status === OtpStatus.USED)
             throw new HttpException(`OTP has already been used`, HttpStatus.BAD_REQUEST);
 
-        // create barebone user profile
-        const newUserData:UserDTO = new UserEntity;
-        newUserData.authorities = ['ROLE_USER'];
 
-        // To-Do: Run check of phone number in other MAX databased to pull associated basic bio information
+        // check if customer info already exists 
+        let user:UserDTO;
+        let userCustomer = await this.customerService.findByFields({ where: { phoneNumber: otp_key_info.subject } });
+        if(!userCustomer || userCustomer.user){
+            // create barebone user profile
+            const newUserData:UserDTO = new UserEntity;
+            newUserData.authorities = ['ROLE_USER'];
+            // To-Do: Run check of phone number in other MAX databased to pull associated basic bio information and assign them to the newUserData object
 
-        // save newUserData to create a new user profile
-        const newUser = await this.userService.save(newUserData, otp_key_info.subject.replace("+", ""), true);
-        if(!newUser || !newUser.id)
-            return { phoneNumber: otp_key_info.subject }
+            // save newUserData to create a new user profile
+            user = await this.userService.save(newUserData, otp_key_info.subject.replace("+", ""), true);
+            if(!user)
+                return { phoneNumber: otp_key_info.subject }
+        }else{
+            user = userCustomer.user;
+        }
         
         // set otp status to used after user is created
         otpObj.status = OtpStatus.USED;
         await this.otpRepository.update(otp_key_info.otp_id, otpObj);
 
         // create customer record for user
-        const userCustomerData:CustomerDTO = new CustomerEntity;
-        userCustomerData.phoneNumber = otp_key_info.subject;
-        userCustomerData.user = newUser;
-        const userCustomer = await this.customerService.save(userCustomerData, otp_key_info.subject.replace("+", ""));
-        if(!userCustomer || !userCustomer.id)
-            return { ...newUser }
+        if(!userCustomer){
+            const userCustomerData:CustomerDTO = new CustomerEntity;
+            userCustomerData.phoneNumber = otp_key_info.subject;
+            userCustomerData.kycLevel = 0;
+            userCustomerData.user = user;
+            userCustomer = await this.customerService.save(userCustomerData, otp_key_info.subject.replace("+", ""));
+            if(!userCustomer)
+                return { ...user }
+        }
 
-        // create wallet for user
-        const userCustomerWalletData: WalletDTO = new WalletEntity;
-        userCustomerWalletData.customer = userCustomer;
-        userCustomerWalletData.type = WalletType.CustomerWallet;
-        userCustomerWalletData.status = WalletStatus.Inactive;
-        const userCustomerWallet = await this.walletService.save(userCustomerWalletData, otp_key_info.subject.replace("+", ""));
-        if(!userCustomerWallet || !userCustomerWallet.id)
-            return {...userCustomer}
+        // check if a wallet has already been created for this customer
+        let userCustomerWallet:WalletDTO = await this.walletService.findByFields({where: { "customer.id": userCustomer.id }});
+        if(!userCustomerWallet){
+            // create wallet for user
+            const userCustomerWalletData: WalletDTO = new WalletEntity;
+            userCustomerWalletData.customer = userCustomer;
+            userCustomerWalletData.type = WalletType.CustomerWallet;
+            userCustomerWalletData.status = WalletStatus.Inactive;
+            userCustomerWallet = await this.walletService.save(userCustomerWalletData, otp_key_info.subject.replace("+", ""));
+            if(!userCustomerWallet)
+                return {...userCustomer}
+        }
 
         return userCustomerWallet
         
