@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { ApiModelProperty } from '@nestjs/swagger';
 import { IsNotEmpty, MinLength, MaxLength, Length, Min, Max, Matches } from 'class-validator';
+import { CustomerStatus } from 'src/utils/enums';
 import { BaseDTO } from './base.dto';
 
 import { UserDTO } from './user.dto';
@@ -31,6 +32,9 @@ export class CustomerDTO extends BaseDTO {
 
     @ApiModelProperty({ description: 'dateOfBirth field', required: false })
     dateOfBirth?: any;
+
+    @ApiModelProperty({ description: 'status field', required: false, enum: CustomerStatus, default: CustomerStatus.ACTIVE })
+    status?: string;
 
     @ApiModelProperty({ type: UserDTO, description: 'user relationship' })
     user: UserDTO;

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { CustomerStatus } from 'src/utils/enums';
 import { Entity, Column, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 
@@ -29,6 +30,9 @@ export class CustomerEntity extends BaseEntity {
 
     @Column({ type: 'date', name: 'date_of_birth', nullable: true })
     dateOfBirth?: any;
+
+    @Column({ name: 'status', enum: CustomerStatus, default: CustomerStatus.ACTIVE })
+    status?: string;
 
     @OneToOne(type => UserEntity)
     @JoinColumn()
