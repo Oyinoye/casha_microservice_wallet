@@ -5,7 +5,7 @@ import { CustomerDTO } from '../service/dto/customer.dto';
 import { CustomerMapper } from '../service/mapper/customer.mapper';
 import { CustomerRepository } from '../repository/customer.repository';
 import { BvnDTO } from './dto/bvn.dto';
-import { NextOfKinRepository } from 'src/repository/next-of-kin.repository';
+import { NextOfKinRepository } from '../repository/next-of-kin.repository';
 import { NextOfKinDTO } from './dto/next-of-kin.dto';
 
 const relationshipNames = [];

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { ApiModelProperty } from '@nestjs/swagger';
 import { IsNotEmpty, MinLength, MaxLength, Length, Min, Max, Matches } from 'class-validator';
-import { CustomerStatus } from 'src/utils/enums';
+import { CustomerStatus } from '../../utils/enums';
 import { BaseDTO } from './base.dto';
 
 import { UserDTO } from './user.dto';

@@ -21,8 +21,8 @@ import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { Request } from '../../client/request';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
-import { BvnDTO } from 'src/service/dto/bvn.dto';
-import { NextOfKinDTO } from 'src/service/dto/next-of-kin.dto';
+import { BvnDTO } from '../../service/dto/bvn.dto';
+import { NextOfKinDTO } from '../../service/dto/next-of-kin.dto';
 
 @Controller('api/customers')
 @UseGuards(AuthGuard, RolesGuard)

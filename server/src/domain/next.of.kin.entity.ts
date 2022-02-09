@@ -17,7 +17,7 @@ export class NextOfKinEntity extends BaseEntity {
     @Column({ name: 'email', nullable: true })
     email?: string;
 
-    @Column({ name: 'address' })
+    @Column({ name: 'phone_number' })
     phoneNumber: string;
 
     @Column({ name: 'nationality' })

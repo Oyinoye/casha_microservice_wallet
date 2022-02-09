@@ -1,6 +1,6 @@
 import { ApiModelProperty } from '@nestjs/swagger';
 import { IsNotEmpty, MaxLength, MinLength, isNumberString, IsNumberString, IsEmail } from 'class-validator';
-import { KinRelationship } from 'src/utils/enums';
+import { KinRelationship } from '../../utils/enums';
 import { CustomerDTO } from './customer.dto';
 
 /**
