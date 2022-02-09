@@ -8,16 +8,16 @@ const ssl = !!sasl
 @Injectable()
 export class ProducerService implements OnModuleInit {
     private readonly kafka = new Kafka({
-        clientId: 'event-command-kafka',
+        clientId: 'casha-wallet',
         brokers: [process.env.KAFKA_BOOTSTRAP_SERVER], // change this to brokers: [process.env.KAFKA_BOOTSTRAP_SERVER],     ssl, sasl
-        ssl,
+        ssl: true,
         sasl: {
             mechanism: 'plain',
             username,
             password
         }
     })
-    private readonly producer: Producer = this.kafka.producer();
+    private readonly producer: Producer = this.kafka.producer({allowAutoTopicCreation: true});
 
 
     async onModuleInit() {

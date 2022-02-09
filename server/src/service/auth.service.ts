@@ -10,10 +10,24 @@ import { UserDTO } from './dto/user.dto';
 import { FindManyOptions } from 'typeorm';
 import { decode, encode, generateOtp } from '../utils/helper.service';
 import { generateOtpDTO } from './dto/generate-otp.dto';
-import { OtpStatus, OtpTypes, OtpUsage } from '../utils/enums';
+import { EmailSendOperation, OtpStatus, OtpTypes, OtpUsage } from '../utils/enums';
 import { OtpRepository } from '../repository/otp-repository';
 import { InitiateVerifyPhoneNumberDTO } from './dto/initiate-verify-phone-number.dto';
 import { VerifyPhoneNumberDTO } from './dto/verify-phone-number.dto';
+import { UserMapper } from './mapper/user.mapper';
+import { UserEntity } from '../domain/user.entity';
+import { WalletDTO } from './dto/wallet.dto';
+import { WalletEntity } from '../domain/wallet.entity';
+import { CustomerService } from './customer.service';
+import { CustomerDTO } from './dto/customer.dto';
+import { CustomerEntity } from '../domain/customer.entity';
+import { WalletType } from '../domain/enumeration/wallet-type';
+import { WalletStatus } from '../domain/enumeration/wallet-status';
+import { WalletService } from './wallet.service';
+import { PasswordResetDTO } from './dto/password-reset.dto';
+import { SendEmailDTO } from './dto/send-email.dto';
+import { ProducerService } from './producer.service';
+import { SendSmsDTO } from './dto/send-sms.dto';
 
 @Injectable()
 export class AuthService {
@@ -23,6 +37,9 @@ export class AuthService {
         @InjectRepository(AuthorityRepository) private authorityRepository: AuthorityRepository,
         @InjectRepository(OtpRepository) private otpRepository: OtpRepository,
         private userService: UserService,
+        private customerService: CustomerService,
+        private walletService: WalletService,
+        private producerService: ProducerService
     ) { }
 
     async login(userLogin: UserLoginDTO): Promise<any> {
@@ -70,7 +87,7 @@ export class AuthService {
     async getAccountByEmail(email: string): Promise<any> {
         const userFind: UserDTO = await this.userService.findByFields({ where: { email } });
         if (!userFind) {
-            throw new HttpException('Email not found', HttpStatus.BAD_REQUEST);
+            throw new HttpException(`User with email "${email}" not found`, HttpStatus.BAD_REQUEST);
         }
         return userFind;
     }
@@ -125,19 +142,38 @@ export class AuthService {
         return await this.userService.findAndCount(options);
     }
 
-    async getVerifyPhoneNumberOTP(payload:InitiateVerifyPhoneNumberDTO): Promise<any> {
+    async initResetPassword(payload: PasswordResetDTO ): Promise<any> {
+
+        // perform email authentication
+        const authUser = await this.getAccountByEmail(payload.email);
+        if(!authUser)
+            throw new HttpException(`User with email "${payload.email}" not found`, HttpStatus.BAD_REQUEST);
+
+        // generate terminal password reset link and include it in the email payload data
+        // To-Do
+
+        const emailPaylaod: SendEmailDTO = {
+            data: authUser,
+            email: payload.email,
+            emailType: EmailSendOperation.RESET_PASSWORD,
+        };
+        // use the kafka client to emmit a message to the broker with topic "send-email" with the email emailPaylaod
+        await this.producerService.produce({topic: 'send-email', messages: [{value: JSON.stringify(emailPaylaod)}]});
+
+        return {message: 'Email sent!'};  
+    }
+
+    async initVerifyPhoneNumber(payload:InitiateVerifyPhoneNumberDTO): Promise<any> {
 
         // check if phone number has already been used by another user
-        const userFind: UserDTO = await this.userService.findByFields({ where: { phoneNumber: payload.phoneNumber } });
-        if (userFind) {
+        const cutomerFind: CustomerDTO = await this.customerService.findByFields({ where: { phoneNumber: payload.phoneNumber } });
+        if (cutomerFind) {
             throw new HttpException(`This phone number ${payload.phoneNumber} has already been used by another user`, HttpStatus.BAD_REQUEST);
         }
 
         // generate otp for phone number verification
         const otp_generation_options: generateOtpDTO = {size: 4, validityDuration: 90 }
-
         const {otp, timestamp, expiration_time} = await generateOtp(otp_generation_options);
-        console.log(expiration_time);
 
         //Create OTP instance in DB
         const otp_instance = await this.otpRepository.save({
@@ -155,10 +191,20 @@ export class AuthService {
             "type": OtpTypes.PHONE_NUMBER,
             "otp_id": otp_instance.id
         }
-
         // Encrypt the details object
         const otpKey = await encode(JSON.stringify(details))
-        return {otp, otpKey}
+        
+        // compose sms message
+        const smsMessage = `Hello, please enter this code ${otp} to verify your phone number`;
+        // build sms payload for kafka messaging
+        const smsPaylaod: SendSmsDTO = {
+            message: smsMessage,
+            phoneNumber: payload.phoneNumber,
+        };
+        // use the kafka client to emmit a message to the broker with topic "send-sms" with the smsPaylaod
+        await this.producerService.produce({topic: 'send-sms', messages: [{value: JSON.stringify(smsPaylaod)}]});
+        // return the otp key to the client
+        return { otpKey };
     }
 
     async verifyPhoneNumber(payload: VerifyPhoneNumberDTO): Promise<any> {
@@ -177,13 +223,53 @@ export class AuthService {
         if(otpObj.status === OtpStatus.USED)
             throw new HttpException(`OTP has already been used`, HttpStatus.BAD_REQUEST);
 
-        // set otp status to used
+
+        // check if customer info already exists 
+        let user:UserDTO;
+        let userCustomer = await this.customerService.findByFields({ where: { phoneNumber: otp_key_info.subject } });
+        if(!userCustomer || userCustomer.user){
+            // create barebone user profile
+            const newUserData:UserDTO = new UserEntity;
+            newUserData.authorities = ['ROLE_USER'];
+            // To-Do: Run check of phone number in other MAX databased to pull associated basic bio information and assign them to the newUserData object
+
+            // save newUserData to create a new user profile
+            user = await this.userService.save(newUserData, otp_key_info.subject.replace("+", ""), true);
+            if(!user)
+                return { phoneNumber: otp_key_info.subject }
+        }else{
+            user = userCustomer.user;
+        }
+        
+        // set otp status to used after user is created
         otpObj.status = OtpStatus.USED;
         await this.otpRepository.update(otp_key_info.otp_id, otpObj);
 
-        // To-Do: Run check of phone number in other MAX databased to pull associated basic bio information
+        // create customer record for user
+        if(!userCustomer){
+            const userCustomerData:CustomerDTO = new CustomerEntity;
+            userCustomerData.phoneNumber = otp_key_info.subject;
+            userCustomerData.kycLevel = 0;
+            userCustomerData.user = user;
+            userCustomer = await this.customerService.save(userCustomerData, otp_key_info.subject.replace("+", ""));
+            if(!userCustomer)
+                return { ...user }
+        }
 
-        return { phoneNumber: otp_key_info.subject, verified: true }
+        // check if a wallet has already been created for this customer
+        let userCustomerWallet:WalletDTO = await this.walletService.findByFields({where: { "customer.id": userCustomer.id }});
+        if(!userCustomerWallet){
+            // create wallet for user
+            const userCustomerWalletData: WalletDTO = new WalletEntity;
+            userCustomerWalletData.customer = userCustomer;
+            userCustomerWalletData.type = WalletType.CustomerWallet;
+            userCustomerWalletData.status = WalletStatus.Inactive;
+            userCustomerWallet = await this.walletService.save(userCustomerWalletData, otp_key_info.subject.replace("+", ""));
+            if(!userCustomerWallet)
+                return {...userCustomer}
+        }
+
+        return userCustomerWallet
         
     }
 }

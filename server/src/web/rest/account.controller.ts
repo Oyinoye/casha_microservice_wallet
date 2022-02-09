@@ -23,11 +23,8 @@ import { LoggingInterceptor } from '../../client/interceptors/logging.intercepto
 import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { AuthService } from '../../service/auth.service';
 import { Client, ClientKafka } from '@nestjs/microservices';
-// import { TransportConfig } from '../../transportConfig';
 import { PasswordResetDTO } from '../../service/dto/password-reset.dto';
-import { SendEmailDTO } from '../../service/dto/send-email.dto';
 import { InitiateVerifyPhoneNumberDTO } from '../../service/dto/initiate-verify-phone-number.dto';
-import { EmailSendOperation } from '../../utils/enums';
 import { SendSmsDTO } from '../../service/dto/send-sms.dto';
 import { VerifyPhoneNumberDTO } from '../../service/dto/verify-phone-number.dto';
 
@@ -39,12 +36,6 @@ export class AccountController {
 
     constructor(private readonly authService: AuthService) {}
 
-    // initialiase a kafka client to handle pub/sub for transports
-    // @Client(TransportConfig)
-    // client: ClientKafka;
-
-
-
     @Post('/verify/phone_number/init')
     @ApiOperation({ title: 'Initiate verify Phone number by OTP', description: 'Initiate the process if verifying a phone number by Sending an OTP to the user\'s phone number provided in the request' })
     @ApiResponse({
@@ -52,19 +43,7 @@ export class AccountController {
         description: 'OTP verification token, that must be sent in the payload when verifying the OTP'
     })
     async initiateVerifyPhoneNumber(@Req() req: Request, @Body() payload: InitiateVerifyPhoneNumberDTO): Promise<any> {
-        // generate otp and response payload
-        const {otp, otpKey} = await this.authService.getVerifyPhoneNumberOTP(payload);
-        // compose sms message
-        const smsMessage = `Hello, please enter this code ${otp} to verify your phone number`;
-        // build sms payload for kafka messaging
-        const smsPaylaod: SendSmsDTO = {
-            message: smsMessage,
-            phoneNumber: payload.phoneNumber,
-        };
-        // use the kafka client to emmit a message to the broker with topic "send-sms" with the smsPaylaod
-        // this.client.emit<any>('send-sms', smsPaylaod);
-        // return the otp key to the client
-        return { otpKey };
+        return await this.authService.initVerifyPhoneNumber(payload);
     }
 
     @Post('/verify/phone_number/finish')
@@ -171,24 +150,7 @@ export class AccountController {
         type: 'string',
     })
     async requestPasswordReset(@Req() req: Request, @Body() payload: PasswordResetDTO): Promise<any> {
-        // perform email authentication
-        const authUser = await this.authService.getAccountByEmail(payload.email);
-        if(!authUser)
-            throw new HttpException(`User with email "${payload.email}" not found`, HttpStatus.BAD_REQUEST);
-
-        // generate terminal password reset link and include it in the email payload data
-        // To-Do
-
-        const emailPaylaod: SendEmailDTO = {
-            data: authUser,
-            email: payload.email,
-            emailType: EmailSendOperation.RESET_PASSWORD,
-        };
-        // use the kafka client to emmit a message to the broker with topic "send-email" with the email emailPaylaod
-        // this.client.emit<any>('send-email', emailPaylaod);
-
-        return {message: 'Email sent!'};
-
+        return await this.authService.initResetPassword(payload);
     }
 
     @Post('/account/reset-password/finish')

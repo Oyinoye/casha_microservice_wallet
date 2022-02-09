@@ -5,16 +5,14 @@ import { Exclude } from 'class-transformer';
 
 @Entity('nhi_user')
 export class UserEntity extends BaseEntity {
-    @Column({ unique: true })
-    login: string;
+    @Column({ unique: true, nullable: true })
+    login?: string;
     @Column({ nullable: true })
     firstName?: string;
     @Column({ nullable: true })
     lastName?: string;
-    @Column()
-    email: string;
-    @Column({ nullable: true })
-    phoneNumber?: string;
+    @Column({ nullable: true})
+    email?: string;
     @Column({ default: false })
     activated?: boolean;
     @Column({ default: 'en' })
@@ -26,6 +24,7 @@ export class UserEntity extends BaseEntity {
 
     @Column({
         type: 'varchar',
+        nullable: true
     })
     @Exclude()
     password: string;
