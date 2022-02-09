@@ -35,5 +35,13 @@ export class WalletEntity extends BaseEntity {
     @ManyToOne(type => CustomerEntity)
     customer: CustomerEntity;
 
+    putMoney(amount: number) {
+        this.balance += amount;
+    }
+
+    removeMoney(amount: number): void{
+        this.balance -= amount;
+    }
+
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

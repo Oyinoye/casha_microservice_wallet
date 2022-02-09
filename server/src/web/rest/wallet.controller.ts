@@ -1,3 +1,4 @@
+import { SendMoneyDTO } from './../../service/dto/send-money.dto';
 import {
     Body,
     ClassSerializerInterceptor,
@@ -112,4 +113,26 @@ export class WalletController {
         HeaderUtil.addEntityDeletedHeaders(req.res, 'Wallet', id);
         return await this.walletEntityService.deleteById(id);
     }
+
+
+    /**
+ *  Money transfer operations
+ */
+
+    @PostMethod('/:id/transfer')
+    @Roles(RoleType.ADMIN)
+    @ApiOperation({ title: 'Transfer funds to another wallet in the system.' })
+    @ApiResponse({
+        status: 201,
+        description: 'Transfer Successful.',
+        type: WalletDTO,
+    })
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    async postTransfer(@Req() req: Request, @Param('id') walletID: string, @Body() sendMoneyDTO: SendMoneyDTO): Promise<WalletDTO> {
+        const updatedWallet = await this.walletEntityService.transfer(sendMoneyDTO, req.user?.login);
+        return updatedWallet;
+    }
+
+
 }
+

@@ -63,3 +63,11 @@ export async function generateOtp(payload: any) {
 
     return {otp, timestamp, expiration_time};
 }
+
+export function getTimeBasedID() {
+
+    // Function to generate ids basesed on time for uniqueness
+
+    return new Date().getTime().toString(16) + Math.random().toString(16).slice(2)
+
+}

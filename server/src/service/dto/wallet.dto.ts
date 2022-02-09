@@ -34,5 +34,13 @@ export class WalletDTO extends BaseDTO {
     @ApiModelProperty({ type: CustomerDTO, description: 'customer relationship' })
     customer: CustomerDTO;
 
+    putMoney(amount: number) {
+        this.balance += amount;
+    }
+
+    removeMoney(amount: number): void{
+        this.balance -= amount;
+    }
+
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }
