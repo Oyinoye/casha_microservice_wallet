@@ -46,7 +46,7 @@ export async function decode(string) {
     // Initialize decipher Object to decrypt using AES-256 Algorithm
     var decipher = crypto.createDecipheriv('aes-256-cbc', key, ivstring);
     var decrypted = decipher.update(string, 'base64', 'utf8');
-    decrypted += decipher.final();
+    decrypted += decipher.final('utf8');
     return decrypted;
 }
 
@@ -57,7 +57,6 @@ export async function generateOtp(payload: any) {
     // add 10 seconds to the to start the validity time count
     let timestamp = new Date();
     timestamp.setSeconds(timestamp.getSeconds() + 10);
-    console.log(timestamp);
     // set OTP expiration to "validityDuration" set in the function param "payload"
     const expiration_time = timestamp.setSeconds(timestamp.getSeconds() + payload.validityDuration);
 

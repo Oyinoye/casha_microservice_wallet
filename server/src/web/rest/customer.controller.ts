@@ -11,6 +11,7 @@ import {
     UseGuards,
     Req,
     UseInterceptors,
+    Post,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { CustomerDTO } from '../../service/dto/customer.dto';
@@ -20,6 +21,8 @@ import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { Request } from '../../client/request';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
+import { BvnDTO } from '../../service/dto/bvn.dto';
+import { NextOfKinDTO } from '../../service/dto/next-of-kin.dto';
 
 @Controller('api/customers')
 @UseGuards(AuthGuard, RolesGuard)
@@ -111,5 +114,25 @@ export class CustomerController {
     async deleteById(@Req() req: Request, @Param('id') id: number): Promise<void> {
         HeaderUtil.addEntityDeletedHeaders(req.res, 'Customer', id);
         return await this.customerEntityService.deleteById(id);
+    }
+
+    @Post('/:id/bvn/add')
+    @Roles(RoleType.USER)
+    @ApiResponse({
+        status: 200,
+        description: 'Add customer\'s BVN to their profile'
+    })
+    async addBvn(@Param('id') id: number, @Body() payload: BvnDTO): Promise<any> {
+        return await this.customerEntityService.addBvn(payload, id);
+    }
+
+    @Post('/:id/next_of_kin/add')
+    @Roles(RoleType.USER)
+    @ApiResponse({
+        status: 200,
+        description: 'Add customer\'s next of kin to their profile'
+    })
+    async addNextOfKin(@Param('id') id: number, @Body() payload: NextOfKinDTO): Promise<any> {
+        return await this.customerEntityService.addNextOfKin(payload, id);
     }
 }

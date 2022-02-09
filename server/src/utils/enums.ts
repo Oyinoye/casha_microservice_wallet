@@ -17,3 +17,16 @@ export enum OtpStatus {
 	UNUSED = 'unused',
 	USED = 'used'
 }
+
+export enum CustomerStatus {
+	ACTIVE = "Active",
+	INACTIVE = "Inactive"
+}
+
+export enum KinRelationship {
+	FATHER = "Father",
+	MOTHER = "Mother",
+	SISTER = "Sister",
+	BROTHER = "Brother",
+	FRIEND = "Friend"
+}

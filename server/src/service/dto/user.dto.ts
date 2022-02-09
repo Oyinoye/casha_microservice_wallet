@@ -1,5 +1,5 @@
 import { ApiModelProperty } from '@nestjs/swagger';
-import { IsString, IsEmail } from 'class-validator';
+import { IsString, IsEmail, MaxLength, MinLength, IsNotEmpty, IsOptional } from 'class-validator';
 import { BaseDTO } from './base.dto';
 import { Exclude } from 'class-transformer';
 
@@ -9,7 +9,7 @@ import { Exclude } from 'class-transformer';
 export class UserDTO extends BaseDTO {
     @ApiModelProperty({ uniqueItems: true, example: 'myuser', description: 'User login' })
     @IsString()
-    login: string;
+    login?: string;
 
     @ApiModelProperty({ example: 'MyUser', description: 'User first name', required: false })
     firstName?: string;
@@ -19,7 +19,7 @@ export class UserDTO extends BaseDTO {
 
     @ApiModelProperty({ example: 'myuser@localhost.it', description: 'User email' })
     @IsEmail()
-    email: string;
+    email?: string;
 
     @ApiModelProperty({ example: 'true', description: 'User activation', required: false })
     activated?: boolean;
