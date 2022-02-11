@@ -12,7 +12,7 @@ export class SendMoneyDTO extends BaseDTO {
     amount: number;
 
     @ApiModelProperty({ description: 'wallet ID of the wallet money is to be sent from', required: true })
-    originWalletID: string;
+    originWalletID?: string;
 
     @ApiModelProperty({ description: 'wallet ID of the wallet money is to be sent to', required: true })
     destinationWalletID: string;

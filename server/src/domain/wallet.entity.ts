@@ -33,7 +33,7 @@ export class WalletEntity extends BaseEntity {
     status: WalletStatus;
 
     @ManyToOne(type => CustomerEntity)
-    customer: CustomerEntity;
+    customer?: CustomerEntity;  // temporarily made this optional because of independent system wallet
 
     putMoney(amount: number) {
         this.balance += amount;

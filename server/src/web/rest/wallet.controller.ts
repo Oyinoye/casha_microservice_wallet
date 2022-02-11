@@ -134,5 +134,20 @@ export class WalletController {
     }
 
 
+    @PostMethod('/:id/fund-wallet')
+    @Roles(RoleType.ADMIN)
+    @ApiOperation({ title: 'Funding your wallet from an external source.' })
+    @ApiResponse({
+        status: 201,
+        description: 'Deposit Successful.',
+        type: WalletDTO,
+    })
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    async postWalletFunding(@Req() req: Request, @Param('id') walletID: string, @Body() sendMoneyDTO: SendMoneyDTO): Promise<WalletDTO> {
+        const fundedWallet = await this.walletEntityService.fundingService(sendMoneyDTO, req.user?.login);
+        return fundedWallet;
+    }
+
+
 }
 

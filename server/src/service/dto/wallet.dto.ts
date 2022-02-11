@@ -32,7 +32,7 @@ export class WalletDTO extends BaseDTO {
     status: WalletStatus;
 
     @ApiModelProperty({ type: CustomerDTO, description: 'customer relationship' })
-    customer: CustomerDTO;
+    customer?: CustomerDTO;         //temporarily made this optional because of system wallet
 
     putMoney(amount: number) {
         this.balance += amount;

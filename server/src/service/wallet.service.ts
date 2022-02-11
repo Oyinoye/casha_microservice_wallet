@@ -1,3 +1,6 @@
+import { WalletType } from '../domain/enumeration/wallet-type';
+import { WalletStatus } from '../domain/enumeration/wallet-status';
+import { CustomerDTO } from './dto/customer.dto';
 import { AppTransactRepository } from './../repository/app-transact.repository';
 import { TransactionType } from './../../../src/main/webapp/app/shared/model/enumerations/transaction-type.model';
 import { JournalRepository } from './../repository/journal.repository';
@@ -151,11 +154,11 @@ export class WalletService {
         transaction.createdDate = sendMoneyDTO.createdDate;
         transaction.customer = originWallet.customer;
         transaction.description = sendMoneyDTO.narration;
-        transaction.transactionDate = new Date()
-        transaction.transactionRef = getTimeBasedID()
-        transaction.type = TransactionType.WalletTransfer
+        transaction.transactionDate = new Date();
+        transaction.transactionRef = getTimeBasedID();
+        transaction.type = TransactionType.WalletTransfer;
 
-        await this.transactEntityRepository.save(transaction)
+        await this.transactEntityRepository.save(transaction);
         
         if(!transaction){
             throw new HttpException('Unable to record transation', HttpStatus.UNAUTHORIZED);
@@ -164,6 +167,133 @@ export class WalletService {
         return originWallet
         // const result = await this.walletEntityRepository.save(entity);
         // return WalletMapper.fromEntityToDTO(result);
+    }
+
+    async fundingService(sendMoneyDTO: SendMoneyDTO, creator?: string): Promise<WalletDTO | undefined> {
+        if (creator) {
+            if (!sendMoneyDTO.createdBy) {
+                sendMoneyDTO.createdBy = creator;
+            }
+            sendMoneyDTO.lastModifiedBy = creator;
+        }
+
+        // Logic to get system wallet. If no system wallet, one will be created (for test purposes).
+
+        
+
+        let originWallet: WalletDTO;
+        let destinationWallet: WalletDTO;
+
+        const createSystemWallet = async (): Promise<WalletDTO> => {
+
+            //create system customer
+            const sysWallet = new WalletDTO();
+
+            sysWallet.accountNumber = '1234567890';
+            sysWallet.balance = 1000000000000;
+            sysWallet.createdBy = 'system';
+            sysWallet.createdDate = new Date();
+            sysWallet.expiryDate = 'never';
+            sysWallet.lastModifiedBy = 'fundingService';
+            sysWallet.lastModifiedDate = new Date();
+            sysWallet.status = WalletStatus.Active;
+            sysWallet.type = WalletType.SystemWallet;
+            sysWallet.walletID = '1234567890';
+
+            const saved_wallet = await this.walletEntityRepository.save(sysWallet)
+
+            if (!saved_wallet) {
+                throw new HttpException('Unable to create system wallet', HttpStatus.BAD_REQUEST);
+            }
+
+            return sysWallet
+        }
+
+        const wallet_sys = await this.walletEntityRepository.findOne({ where: { type: WalletType.SystemWallet } });
+
+        originWallet = wallet_sys ? wallet_sys : await createSystemWallet();
+
+        destinationWallet = await this.walletEntityRepository.findOne(sendMoneyDTO.destinationWalletID);
+        
+        const wallets = [originWallet, destinationWallet];
+
+        
+
+        if(!wallets){
+            throw new HttpException('Wallet ID does not exist', HttpStatus.NOT_FOUND);
+        }
+
+
+        if(originWallet.balance < sendMoneyDTO.amount){
+            throw new HttpException('Not enough money in system wallet', HttpStatus.BAD_REQUEST);
+        }
+
+        let transactionWallets: WalletDTO[];
+
+        originWallet.removeMoney(sendMoneyDTO.amount);
+        destinationWallet.putMoney(sendMoneyDTO.amount);
+
+        transactionWallets = [originWallet, destinationWallet];
+
+        await this.walletEntityRepository.save(transactionWallets);
+
+        const transactionJournalLines = []
+
+        let originjournalLine = new JournalLineDTO();
+        originjournalLine.amount = sendMoneyDTO.amount;
+        originjournalLine.type = sendMoneyDTO.transactionType;
+        originjournalLine.operation = OperationType.Debit;
+        originjournalLine.narration = `outgoing_transfer_to_account: ${destinationWallet.accountNumber}`;
+        originjournalLine.wallet = originWallet;
+        originjournalLine.createdBy = sendMoneyDTO.createdBy;
+        originjournalLine.createdDate = sendMoneyDTO.createdDate;
+
+        transactionJournalLines.push(originjournalLine);
+        await this.journalLineEntityRepository.save(originjournalLine);
+
+        let destinationJournalLine = new JournalLineDTO();
+        destinationJournalLine.amount = sendMoneyDTO.amount;
+        destinationJournalLine.type = sendMoneyDTO.transactionType;
+        destinationJournalLine.operation = OperationType.Credit;
+        destinationJournalLine.narration = `incoming_transfer_from_account: ${originWallet.accountNumber}`;
+        destinationJournalLine.wallet = destinationWallet;
+        destinationJournalLine.createdBy = sendMoneyDTO.createdBy;
+        destinationJournalLine.createdDate = sendMoneyDTO.createdDate;
+
+        transactionJournalLines.push(destinationJournalLine);
+        await this.journalLineEntityRepository.save(destinationJournalLine)
+
+
+        let entryJournal = new JournalDTO();
+        entryJournal.journalID = getTimeBasedID(); // Journal ID may need to be generated according to document specification in future
+        entryJournal.dateOfEntry = new Date();
+        entryJournal.description = `transfer_between_accounts: ${originWallet.accountNumber},  ${destinationWallet.accountNumber}`;
+        entryJournal.createdBy = sendMoneyDTO.createdBy;
+        entryJournal.createdDate = sendMoneyDTO.createdDate;
+        entryJournal.journalLines = transactionJournalLines;
+
+        await this.journalLineEntityRepository.save(entryJournal);
+        
+        if(!entryJournal){
+            throw new HttpException('Unable to make journal entry', HttpStatus.UNAUTHORIZED);
+        }
+
+        let transaction = new AppTransactDTO();
+        transaction.createdBy = sendMoneyDTO.createdBy;
+        transaction.createdDate = sendMoneyDTO.createdDate;
+        transaction.customer = destinationWallet.customer;
+        transaction.description = sendMoneyDTO.narration;
+        transaction.transactionDate = new Date();
+        transaction.transactionRef = getTimeBasedID();
+        transaction.type = TransactionType.WalletFunding;
+
+        await this.transactEntityRepository.save(transaction);
+        
+        if(!transaction){
+            throw new HttpException('Unable to record transation', HttpStatus.UNAUTHORIZED);
+        }
+
+        return destinationWallet;
     }
 
     async update(walletEntityDTO: WalletDTO, updater?: string): Promise<WalletDTO | undefined> {

@@ -1,6 +1,7 @@
 import { Logger, INestApplication } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { config } from './config';
+import { writeFileSync } from 'fs';
 
 export function setupSwagger(app: INestApplication): any {
     const logger: Logger = new Logger('Swagger');
@@ -14,5 +15,7 @@ export function setupSwagger(app: INestApplication): any {
         .build();
     const document = SwaggerModule.createDocument(app, options);
     SwaggerModule.setup(swaggerEndpoint, app, document);
+    
+    writeFileSync("./swagger.json", JSON.stringify(document));
     logger.log(`Added swagger on endpoint ${swaggerEndpoint}`);
 }
